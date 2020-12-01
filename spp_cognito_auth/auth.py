@@ -52,7 +52,7 @@ class Auth:
             authorization_response=self._config.callback_url,
         )
 
-    def get_public_keys(self):
+    def get_public_keys(self) -> str:
         if (
             self._jwks_token is None
             or self._jwks_expires_at is None
@@ -61,9 +61,11 @@ class Auth:
             resp = requests.get(self.public_key_url())
             cache_control = CacheController().parse_cache_control(resp.headers)
             max_age = cache_control.get("max-age", 0)
-            self._jwks_expires_at = datetime.now() + timedelta(seconds=float(max_age))
+            self._jwks_expires_at = datetime.now() + timedelta(
+                seconds=float(max_age)
+            )  # type: ignore
             self._jwks_token = resp.json()
-        return self._jwks_token
+        return self._jwks_token  # type: ignore
 
     def get_username(self) -> str:
         return self._session.get("username")
@@ -73,4 +75,3 @@ class Auth:
 
     def get_redirect(self) -> str:
         return self._session.get("redirect_url")
-

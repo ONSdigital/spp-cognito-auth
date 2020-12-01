@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from unittest import mock
 
+import pytest
 from authlib.oauth2.rfc6749 import OAuth2Token
 from freezegun import freeze_time
 
@@ -14,7 +15,7 @@ class TestAuth:
             + "client_id=test-client-id&"
             + "response_type=code&"
             + "scope=aws.cognito.signin.user.admin+email+openid+phone+profile&"
-            + f"redirect_uri=http://test-app-host.test.com/auth/callback"
+            + "redirect_uri=http://test-app-host.test.com/auth/callback"
         )
 
     def test_public_key_url(self, auth):
@@ -121,3 +122,20 @@ class TestAuth:
         auth._session = {}
         auth.set_redirect("/foobar")
         assert auth._session["redirect_url"] == "/foobar"
+
+    def test_logged_in(self, auth):
+        auth._session = {"access_token": "my-token"}
+        assert auth.logged_in() is True
+
+    def test_logged_in_no_token(self, auth):
+        auth._session = {}
+        assert auth.logged_in() is False
+
+    def test_logged_in_expired(self, auth):
+        auth._session = {"access_token": "my-token"}
+        assert auth.logged_in() is False
+
+    def test_logged_in_error(self, auth):
+        with pytest.raises(Exception) as err:
+            auth.logged_in()
+        assert str(err.value) == "foobar"
