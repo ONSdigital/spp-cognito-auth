@@ -66,10 +66,11 @@ class Auth:
         return self._jwks_token
 
     def get_username(self) -> str:
-        return ""
+        return self._session.get("username")
 
-    def set_redirect(self, uri: str) -> None:
-        pass
+    def set_redirect(self, url: str) -> None:
+        self._session["redirect_url"] = url
 
     def get_redirect(self) -> str:
-        return ""
+        return self._session.get("redirect_url")
+

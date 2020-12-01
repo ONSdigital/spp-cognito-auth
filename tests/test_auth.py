@@ -120,4 +120,4 @@ class TestAuth:
     def test_set_redirect(self, auth):
         auth._session = {}
         auth.set_redirect("/foobar")
-        assert auth._session["redirect_url"] == "foobar"
+        assert auth._session["redirect_url"] == "/foobar"
