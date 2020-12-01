@@ -1,8 +1,9 @@
 from unittest import mock
 
 import pytest
+from flask import Flask, session
 
-from spp_cognito_auth import Auth, AuthConfig
+from spp_cognito_auth import Auth, AuthConfig, requires_auth
 
 
 @pytest.fixture
@@ -40,3 +41,23 @@ def jwks():
             }
         ]
     }
+
+
+@pytest.fixture
+def flask_app(auth):
+    app = Flask(__name__)
+    auth._session = session
+    app.auth = auth
+
+    @app.route("/")
+    @requires_auth
+    def root():
+        return "Hello, World!"
+
+    with app.app_context():
+        yield app
+
+
+@pytest.fixture
+def client(flask_app):
+    return flask_app.test_client()
