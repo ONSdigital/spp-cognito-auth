@@ -21,13 +21,10 @@ class Auth:
         self._jwks_token = None
 
     def login_url(self) -> str:
-        return (
-            f"{fix_url(self._config.cognito_domain)}/login?"
-            + f"client_id={self._config.client_id}&"
-            + "response_type=code&"
-            + f"scope={'+'.join(self._config.cognito_scopes)}&"
-            + f"redirect_uri={self._config.callback_url}"
-        )
+        return self._cognito_url("login")
+
+    def logout_url(self) -> str:
+        return self._cognito_url("logout")
 
     def public_key_url(self) -> str:
         return f"{fix_url(self._config.cognito_endpoint)}/.well-known/jwks.json"
@@ -56,6 +53,9 @@ class Auth:
             except ExpiredTokenError:
                 pass
         return False
+
+    def logout(self) -> None:
+        self._session.clear()
 
     def get_auth_token(self, auth_code: str) -> OAuth2Token:
         return self._oauth.fetch_token(
@@ -88,3 +88,12 @@ class Auth:
 
     def get_redirect(self) -> str:
         return self._session.get("redirect_url")
+
+    def _cognito_url(self, path: str) -> str:
+        return (
+            f"{fix_url(self._config.cognito_domain)}/{path}?"
+            + f"client_id={self._config.client_id}&"
+            + "response_type=code&"
+            + f"scope={'+'.join(self._config.cognito_scopes)}&"
+            + f"redirect_uri={self._config.callback_url}"
+        )

@@ -20,7 +20,7 @@ class TestAuth:
         )
 
     def test_logout_url(self, auth):
-        assert auth.login_url() == (
+        assert auth.logout_url() == (
             "https://test-cognito-domain.test.com/logout?"
             + "client_id=test-client-id&"
             + "response_type=code&"
