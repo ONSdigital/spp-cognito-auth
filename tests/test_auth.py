@@ -19,6 +19,15 @@ class TestAuth:
             + "redirect_uri=http://test-app-host.test.com/auth/callback"
         )
 
+    def test_logout_url(self, auth):
+        assert auth.login_url() == (
+            "https://test-cognito-domain.test.com/logout?"
+            + "client_id=test-client-id&"
+            + "response_type=code&"
+            + "scope=aws.cognito.signin.user.admin+email+openid+phone+profile&"
+            + "redirect_uri=http://test-app-host.test.com/auth/callback"
+        )
+
     def test_public_key_url(self, auth):
         assert (
             auth.public_key_url()
@@ -153,3 +162,8 @@ class TestAuth:
         with pytest.raises(Exception) as err:
             auth.logged_in()
         assert str(err.value) == "foobar"
+
+    def test_logout(self, auth):
+        auth._session = {"access_token": "my-token"}
+        auth.logout()
+        assert auth._session == {}

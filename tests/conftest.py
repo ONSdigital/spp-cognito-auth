@@ -1,7 +1,7 @@
 from unittest import mock
 
 import pytest
-from flask import Flask, session
+from flask import Flask
 
 from spp_cognito_auth import Auth, AuthConfig, requires_auth
 
@@ -23,8 +23,8 @@ def oauth():
 
 
 @pytest.fixture
-def auth(config, oauth):
-    return Auth(config, oauth, None)
+def auth(config, oauth, session):
+    return Auth(config, oauth, session)
 
 
 @pytest.fixture
@@ -44,9 +44,14 @@ def jwks():
 
 
 @pytest.fixture
+def session():
+    return {}
+
+
+@pytest.fixture
 def flask_app(auth):
     app = Flask(__name__)
-    auth._session = session
+    app.secret_key = "my-secret-key"
     app.auth = auth
 
     @app.route("/")
@@ -60,4 +65,6 @@ def flask_app(auth):
 
 @pytest.fixture
 def client(flask_app):
+    ctx = flask_app.test_request_context()
+    ctx.push()
     return flask_app.test_client()

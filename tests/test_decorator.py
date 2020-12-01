@@ -12,8 +12,9 @@ def test_required_auth_logged_in(mock_logged_in, client):
 
 
 @mock.patch.object(spp_cognito_auth.Auth, "logged_in")
-def test_required_auth_logged_out(mock_logged_in, auth, client):
+def test_required_auth_logged_out(mock_logged_in, client, flask_app):
     mock_logged_in.return_value = False
     response = client.get("/")
     assert response.status_code == 302
-    assert response.headers["Location"] == auth.login_url()
+    assert response.headers["Location"] == flask_app.auth.login_url()
+    assert flask_app.auth.get_redirect() == "http://localhost/"
