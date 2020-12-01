@@ -1,3 +1,5 @@
+from unittest import mock
+
 import pytest
 
 from spp_cognito_auth import Auth, AuthConfig
@@ -15,5 +17,26 @@ def config():
 
 
 @pytest.fixture
-def auth(config):
-    return Auth(config, None, None)
+def oauth():
+    return mock.MagicMock()
+
+
+@pytest.fixture
+def auth(config, oauth):
+    return Auth(config, oauth, None)
+
+
+@pytest.fixture
+def jwks():
+    return {
+        "keys": [
+            {
+                "alg": "RS256",
+                "e": "AQAB",
+                "kid": "abcdefghijklmnopqrsexample=",
+                "kty": "RSA",
+                "n": "lsjhglskjhgslkjgh43lj5h34lkjh34lkjht3example",
+                "use": "sig",
+            }
+        ]
+    }
