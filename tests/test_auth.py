@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from unittest import mock
 
 import pytest
+from authlib.jose.errors import ExpiredTokenError
 from authlib.oauth2.rfc6749 import OAuth2Token
 from freezegun import freeze_time
 
@@ -123,7 +124,9 @@ class TestAuth:
         auth.set_redirect("/foobar")
         assert auth._session["redirect_url"] == "/foobar"
 
-    def test_logged_in(self, auth):
+    @mock.patch.object(spp_cognito_auth.Auth, "get_public_keys")
+    @mock.patch("authlib.jose.jwt.decode")
+    def test_logged_in(self, mock_jwt_decode, mock_get_public_keys, auth):
         auth._session = {"access_token": "my-token"}
         assert auth.logged_in() is True
 
@@ -131,11 +134,22 @@ class TestAuth:
         auth._session = {}
         assert auth.logged_in() is False
 
-    def test_logged_in_expired(self, auth):
+    @mock.patch.object(spp_cognito_auth.Auth, "get_public_keys")
+    @mock.patch("authlib.jose.jwt.decode")
+    def test_logged_in_expired(self, mock_jwt_decode, mock_get_public_keys, auth):
+        mock_token = mock.MagicMock()
+        mock_jwt_decode.return_value = mock_token
+        mock_token.validate.side_effect = ExpiredTokenError()
         auth._session = {"access_token": "my-token"}
         assert auth.logged_in() is False
 
-    def test_logged_in_error(self, auth):
+    @mock.patch.object(spp_cognito_auth.Auth, "get_public_keys")
+    @mock.patch("authlib.jose.jwt.decode")
+    def test_logged_in_error(self, mock_jwt_decode, mock_get_public_keys, auth):
+        auth._session = {"access_token": "my-token"}
+        mock_token = mock.MagicMock()
+        mock_jwt_decode.return_value = mock_token
+        mock_token.validate.side_effect = Exception("foobar")
         with pytest.raises(Exception) as err:
             auth.logged_in()
         assert str(err.value) == "foobar"

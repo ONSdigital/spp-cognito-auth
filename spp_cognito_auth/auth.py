@@ -4,6 +4,7 @@ from typing import Any
 import requests
 from authlib.integrations.requests_client import OAuth2Session
 from authlib.jose import jwt
+from authlib.jose.errors import ExpiredTokenError
 from authlib.oauth2.rfc6749 import OAuth2Token
 from cachecontrol import CacheController
 
@@ -43,6 +44,18 @@ class Auth:
 
         token = jwt.decode(self._session["access_token"], self.get_public_keys())
         self._session["username"] = token["username"]
+
+    def logged_in(self) -> bool:
+        if "access_token" in self._session:
+            try:
+                token = jwt.decode(
+                    self._session["access_token"], self.get_public_keys()
+                )
+                token.validate()
+                return True
+            except ExpiredTokenError:
+                pass
+        return False
 
     def get_auth_token(self, auth_code: str) -> OAuth2Token:
         return self._oauth.fetch_token(
