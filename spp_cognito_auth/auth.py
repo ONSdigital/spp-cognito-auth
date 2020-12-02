@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Any
+from typing import Any, List
 
 import requests
 from authlib.integrations.requests_client import OAuth2Session
@@ -83,6 +83,22 @@ class Auth:
 
     def get_username(self) -> str:
         return self._session.get("username")
+
+    def get_roles(self) -> List[str]:
+        return self._session.get("roles", [])
+
+    def match_role(self, role_matcher: str) -> bool:
+        role_matcher = role_matcher.split(".")
+        for role in self.get_roles():
+            split_role = role.split(".")
+            role_matched = []
+            for index, role_part in enumerate(role_matcher):
+                if role_part == "*":
+                    role_matched.append(True)
+                    continue
+                role_matched.append(role_part == split_role[index])
+            return all(role_matched)
+        return False
 
     def set_redirect(self, url: str) -> None:
         self._session["redirect_url"] = url
