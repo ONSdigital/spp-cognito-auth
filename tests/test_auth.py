@@ -124,6 +124,14 @@ class TestAuth:
         auth._session = {}
         assert auth.get_username() is None
 
+    def test_get_roles(self, auth):
+        auth._session = {"roles": ["survey.main.read", "survey.main.write"]}
+        assert auth.get_roles() == ["survey.main.read", "survey.main.write"]
+
+    def test_get_roles_none(self, auth):
+        auth._session = {}
+        assert auth.get_roles() == []
+
     def test_get_redirect(self, auth):
         auth._session = {"redirect_url": "/foobar"}
         assert auth.get_redirect() == "/foobar"
@@ -171,3 +179,17 @@ class TestAuth:
         auth._session = {"access_token": "my-token"}
         auth.logout()
         assert auth._session == {}
+
+    @pytest.mark.parametrize(
+        "role_matcher,roles,expected",
+        [
+            ("survey.main.read", ["survey.main.read"], True),
+            ("survey.main.write", ["survey.main.read"], False),
+            ("survey.*.read", ["survey.main.read"], True),
+            ("survey.*.*", ["survey.main.write"], True),
+            ("survey.*.write", ["survey.main.read"], False),
+        ],
+    )
+    def test_match_role(self, role_matcher, roles, expected, auth):
+        auth._session["roles"] = roles
+        assert auth.match_role(role_matcher) is expected
