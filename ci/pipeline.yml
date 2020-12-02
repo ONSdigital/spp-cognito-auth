@@ -1,0 +1,23 @@
+resources:
+- name: spp-cognito-auth-git
+  type: git
+  source:
+    uri: https://github.com/ONSdigital/spp-cognito-auth.git
+    branch: master
+    username: ((github.concourse_access_key))
+    password: x-oauth-basic
+
+jobs:
+- name: lint
+  plan:
+  - get: spp-cognito-auth-git
+    trigger: true
+  - task: lint
+    file: spp-cognito-auth-git/ci/tasks/python/lint/task.yml
+
+- name: unit-test
+  plan:
+  - get: spp-cognito-auth-git
+    trigger: true
+  - task: unit-test
+    file: spp-cognito-auth-git/ci/tasks/python/test/task.yml

@@ -1,0 +1,11 @@
+---
+platform: linux
+image_resource:
+  type: docker-image
+  source:
+    repository: python
+    tag: 3.8
+inputs:
+  - name: spp-cognito-auth-git
+run:
+  path: ./spp-cognito-auth-git/ci/tasks/python/test/task.sh
