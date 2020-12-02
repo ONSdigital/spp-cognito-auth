@@ -3,7 +3,7 @@ resources:
   type: git
   source:
     uri: https://github.com/ONSdigital/spp-cognito-auth.git
-    branch: master
+    branch: main
     username: ((github.concourse_access_key))
     password: x-oauth-basic
 
