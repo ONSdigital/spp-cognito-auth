@@ -41,6 +41,7 @@ class Auth:
 
         token = jwt.decode(self._session["access_token"], self.get_public_keys())
         self._session["username"] = token["username"]
+        self._session["roles"] = token["cognito:groups"]
 
     def logged_in(self) -> bool:
         if "access_token" in self._session:
