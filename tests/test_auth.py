@@ -95,7 +95,6 @@ class TestAuth:
     ):
         mock_get_auth_token.return_value = {
             "access_token": "mock-access-token",
-            "id_token": "mock-id-token",
             "refresh_token": "mock-refresh-token",
             "expires_at": "mock-expires-at",
         }
@@ -110,7 +109,6 @@ class TestAuth:
         mock_jwt_decode.assert_called_once_with("mock-access-token", jwks)
         mock_get_public_keys.assert_called_once()
         assert auth._session["access_token"] == "mock-access-token"
-        assert auth._session["id_token"] == "mock-id-token"
         assert auth._session["refresh_token"] == "mock-refresh-token"
         assert auth._session["expires_at"] == "mock-expires-at"
         assert auth._session["username"] == "mock-user"

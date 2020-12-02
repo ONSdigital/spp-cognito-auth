@@ -11,12 +11,14 @@ from cachecontrol import CacheController
 from .config import AuthConfig
 from .utils import fix_url
 
+
 def new_oauth_client(config: AuthConfig):
     return OAuth2Session(
         config.client_id,
         config.client_secret,
         redirect_uri=fix_url(config.callback_url),
     )
+
 
 class Auth:
     def __init__(self, config: AuthConfig, oauth: OAuth2Session, session: Any) -> None:
@@ -41,7 +43,6 @@ class Auth:
     def process_callback(self, auth_code: str) -> None:
         auth_info = self.get_auth_token(auth_code)
         self._session["access_token"] = auth_info["access_token"]
-        self._session["id_token"] = auth_info["id_token"]
         self._session["refresh_token"] = auth_info["refresh_token"]
         self._session["expires_at"] = auth_info["expires_at"]
 

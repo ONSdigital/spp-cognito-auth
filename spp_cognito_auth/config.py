@@ -27,5 +27,5 @@ class AuthConfig:
             client_secret=os.environ["CLIENT_SECRET"],
             callback_url=os.environ["CALLBACK_URL"],
             cognito_domain=os.environ["COGNITO_DOMAIN"],
-            cognito_endpoint=os.environ["COGNITO_ENDPOINT"]
+            cognito_endpoint=os.environ["COGNITO_ENDPOINT"],
         )
