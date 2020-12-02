@@ -3,7 +3,7 @@ from unittest import mock
 import pytest
 from flask import Flask
 
-from spp_cognito_auth import Auth, AuthConfig, requires_auth
+from spp_cognito_auth import Auth, AuthConfig, requires_auth, requires_role
 
 
 @pytest.fixture
@@ -58,6 +58,12 @@ def flask_app(auth):
     @requires_auth
     def root():
         return "Hello, World!"
+
+    @app.route("/test-roles")
+    @requires_auth
+    @requires_role(["survey.main.read", "survey.main.write"])
+    def test_roles():
+        return "Welcome to the Role endpoint!"
 
     with app.app_context():
         yield app
