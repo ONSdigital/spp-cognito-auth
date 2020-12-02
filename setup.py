@@ -18,7 +18,10 @@ setup(
     package_data={"spp_cognito_auth": ["py.typed"]},
     python_requires=">=3.6",
     install_requires=[
-        "pytz>=2020.4",
+        "Authlib>=0.15.2",
+        "requests>=2.25.0",
+        "CacheControl>=0.12.6",
+        "Flask>=1.1.2",
     ],
     test_suite="tests",
     classifiers=[
