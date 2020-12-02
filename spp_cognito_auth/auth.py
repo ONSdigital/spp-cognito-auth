@@ -88,11 +88,11 @@ class Auth:
         return self._session.get("roles", [])
 
     def match_role(self, role_matcher: str) -> bool:
-        role_matcher = role_matcher.split(".")
+        split_role_matcher = role_matcher.split(".")
         for role in self.get_roles():
             split_role = role.split(".")
             role_matched = []
-            for index, role_part in enumerate(role_matcher):
+            for index, role_part in enumerate(split_role_matcher):
                 if role_part == "*":
                     role_matched.append(True)
                     continue
