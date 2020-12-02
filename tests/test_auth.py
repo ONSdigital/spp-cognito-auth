@@ -99,7 +99,10 @@ class TestAuth:
             "refresh_token": "mock-refresh-token",
             "expires_at": "mock-expires-at",
         }
-        mock_jwt_decode.return_value = {"username": "mock-user"}
+        mock_jwt_decode.return_value = {
+            "username": "mock-user",
+            "cognito:groups": ["survey.main.read", "survey.main.write"],
+        }
         mock_get_public_keys.return_value = jwks
         auth._session = {}
         auth.process_callback("fake-auth-code")
@@ -111,6 +114,7 @@ class TestAuth:
         assert auth._session["refresh_token"] == "mock-refresh-token"
         assert auth._session["expires_at"] == "mock-expires-at"
         assert auth._session["username"] == "mock-user"
+        assert auth._session["roles"] == ["survey.main.read", "survey.main.write"]
 
     def test_get_username(self, auth):
         auth._session = {"username": "test-user"}
