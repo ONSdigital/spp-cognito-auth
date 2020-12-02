@@ -188,6 +188,13 @@ class TestAuth:
             ("survey.*.read", ["survey.main.read"], True),
             ("survey.*.*", ["survey.main.write"], True),
             ("survey.*.write", ["survey.main.read"], False),
+            (
+                "survey.*.read",
+                ["survey.secondary.read", "survey.main.write", "survey.main.read"],
+                True,
+            ),
+            ("survey.*.read", ["survey.main.write", "survey.main.read"], True),
+            ("survey.main.read", ["survey.secondary.read", "survey.main.read"], True),
         ],
     )
     def test_match_role(self, role_matcher, roles, expected, auth):
