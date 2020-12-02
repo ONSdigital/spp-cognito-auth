@@ -97,7 +97,8 @@ class Auth:
                     role_matched.append(True)
                     continue
                 role_matched.append(role_part == split_role[index])
-            return all(role_matched)
+            if all(role_matched):
+                return True
         return False
 
     def set_redirect(self, url: str) -> None:
