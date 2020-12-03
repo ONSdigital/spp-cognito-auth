@@ -2,6 +2,8 @@
 
 A python library to easily implement Cognito authentication and authorisation.
 
+A reference usage of this client is provided in <https://github.com/ONSdigital/spp-cognito-poc>
+
 ## Installation
 
 ### Pip
