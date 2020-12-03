@@ -12,7 +12,7 @@ from .config import AuthConfig
 from .utils import fix_url
 
 
-def new_oauth_client(config: AuthConfig):
+def new_oauth_client(config: AuthConfig) -> OAuth2Session:
     return OAuth2Session(
         config.client_id,
         config.client_secret,

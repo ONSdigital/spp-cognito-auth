@@ -7,6 +7,7 @@ from authlib.oauth2.rfc6749 import OAuth2Token
 from freezegun import freeze_time
 
 import spp_cognito_auth
+from spp_cognito_auth import new_oauth_client
 
 
 class TestAuth:
@@ -198,3 +199,10 @@ class TestAuth:
     def test_match_role(self, role_matcher, roles, expected, auth):
         auth._session["roles"] = roles
         assert auth.match_role(role_matcher) is expected
+
+
+def test_new_oauth_client(config):
+    oauth2_session = new_oauth_client(config)
+    assert oauth2_session.client_id == config.client_id
+    assert oauth2_session.client_secret == config.client_secret
+    assert oauth2_session.redirect_uri == config.callback_url

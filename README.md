@@ -118,10 +118,10 @@ Configuration can be set in two ways.
 auth_config = AuthConfig(
     client_id="client-id",
     client_secret="client-secret",
-    callback_url="callback_url",
+    callback_url="callback-url",
     cognito_domain="cognito_domain",
-    cognito_endpoint="congito_endpoint",
-    cognito_scopes=["cognito_scopes"]
+    cognito_endpoint="cognito-endpoint",
+    cognito_scopes=["cognito-scopes"]
 )
 ```
 
