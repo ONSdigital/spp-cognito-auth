@@ -5,28 +5,35 @@ import pytest
 from authlib.jose.errors import ExpiredTokenError
 from authlib.oauth2.rfc6749 import OAuth2Token
 from freezegun import freeze_time
+from helpers import is_valid_uuid
 
 import spp_cognito_auth
 from spp_cognito_auth import new_oauth_client
 
 
 class TestAuth:
-    def test_login_url(self, auth):
+    @mock.patch.object(spp_cognito_auth.Auth, "generate_state")
+    def test_login_url(self, mock_generate_state, auth):
+        mock_generate_state.return_value = "my-random-uuid"
         assert auth.login_url() == (
             "https://test-cognito-domain.test.com/login?"
             + "client_id=test-client-id&"
             + "response_type=code&"
             + "scope=aws.cognito.signin.user.admin+email+openid+phone+profile&"
-            + "redirect_uri=http://test-app-host.test.com/auth/callback"
+            + "redirect_uri=http://test-app-host.test.com/auth/callback&"
+            + "state=my-random-uuid"
         )
 
-    def test_logout_url(self, auth):
+    @mock.patch.object(spp_cognito_auth.Auth, "generate_state")
+    def test_logout_url(self, mock_generate_state, auth):
+        mock_generate_state.return_value = "my-random-uuid"
         assert auth.logout_url() == (
             "https://test-cognito-domain.test.com/logout?"
             + "client_id=test-client-id&"
             + "response_type=code&"
             + "scope=aws.cognito.signin.user.admin+email+openid+phone+profile&"
-            + "redirect_uri=http://test-app-host.test.com/auth/callback"
+            + "redirect_uri=http://test-app-host.test.com/auth/callback&"
+            + "state=my-random-uuid"
         )
 
     def test_public_key_url(self, auth):
@@ -34,8 +41,6 @@ class TestAuth:
             auth.public_key_url()
             == "https://test-cognito-endpoint.test.com/.well-known/jwks.json"
         )
-
-    def test_token_url(self, auth):
         assert auth.token_url() == "https://test-cognito-domain.test.com/oauth2/token"
 
     def test_get_auth_token(self, auth, oauth):
@@ -199,6 +204,20 @@ class TestAuth:
     def test_match_role(self, role_matcher, roles, expected, auth):
         auth._session["roles"] = roles
         assert auth.match_role(role_matcher) is expected
+
+    def test_generate_state(self, auth):
+        state = auth.generate_state()
+        assert is_valid_uuid(state)
+        assert is_valid_uuid(auth._session["state"])
+        assert auth._session["state"] == state
+
+    def test_validate_state(self, auth):
+        auth._session["state"] = "fake-state"
+        assert auth.validate_state("fake-state") is True
+
+    def test_validate_state_invalid(self, auth):
+        auth._session["state"] = "fake-state"
+        assert auth.validate_state("invalid-state") is False
 
 
 def test_new_oauth_client(config):

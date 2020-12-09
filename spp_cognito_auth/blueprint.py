@@ -22,6 +22,9 @@ class AuthBlueprint:
 
     def callback(self) -> Response:
         auth_code = request.args.get("code")
+        state = request.args.get("state")
+        if not current_app.auth.validate_state(state):
+            return self.logout()
         current_app.auth.process_callback(auth_code)
         redirect_url = current_app.auth.get_redirect()
         if redirect_url:

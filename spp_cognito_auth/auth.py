@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from typing import Any, List
+from uuid import uuid4
 
 import requests
 from authlib.integrations.requests_client import OAuth2Session
@@ -114,11 +115,19 @@ class Auth:
     def get_redirect(self) -> str:
         return self._session.get("redirect_url")
 
+    def generate_state(self) -> str:
+        self._session["state"] = str(uuid4())
+        return self._session["state"]
+
+    def validate_state(self, state: str) -> bool:
+        return state == self._session["state"]
+
     def _cognito_url(self, path: str) -> str:
         return (
             f"{fix_url(self._config.cognito_domain)}/{path}?"
             + f"client_id={self._config.client_id}&"
             + "response_type=code&"
             + f"scope={'+'.join(self._config.cognito_scopes)}&"
-            + f"redirect_uri={self._config.callback_url}"
+            + f"redirect_uri={self._config.callback_url}&"
+            + f"state={self.generate_state()}"
         )

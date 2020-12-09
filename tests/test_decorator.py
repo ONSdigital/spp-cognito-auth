@@ -16,7 +16,14 @@ def test_required_auth_logged_out(mock_logged_in, client, flask_app):
     mock_logged_in.return_value = False
     response = client.get("/")
     assert response.status_code == 302
-    assert response.headers["Location"] == flask_app.auth.login_url()
+    assert response.headers["Location"].startswith(
+        "https://test-cognito-domain.test.com/login?"
+        + "client_id=test-client-id&"
+        + "response_type=code&"
+        + "scope=aws.cognito.signin.user.admin+email+openid+phone+profile&"
+        + "redirect_uri=http://test-app-host.test.com/auth/callback&"
+        + "state="
+    )
     assert flask_app.auth.get_redirect() == "http://localhost/"
 
 
