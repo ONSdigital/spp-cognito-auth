@@ -120,5 +120,6 @@ class Auth:
             + f"client_id={self._config.client_id}&"
             + "response_type=code&"
             + f"scope={'+'.join(self._config.cognito_scopes)}&"
-            + f"redirect_uri={self._config.callback_url}"
+            + f"redirect_uri={self._config.callback_url}&"
+            + f"state={self._config.cognito_state}"
         )

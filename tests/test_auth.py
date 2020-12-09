@@ -17,7 +17,8 @@ class TestAuth:
             + "client_id=test-client-id&"
             + "response_type=code&"
             + "scope=aws.cognito.signin.user.admin+email+openid+phone+profile&"
-            + "redirect_uri=http://test-app-host.test.com/auth/callback"
+            + "redirect_uri=http://test-app-host.test.com/auth/callback&"
+            + "state=123_redirect=https://www.example.com"
         )
 
     def test_logout_url(self, auth):
@@ -26,7 +27,9 @@ class TestAuth:
             + "client_id=test-client-id&"
             + "response_type=code&"
             + "scope=aws.cognito.signin.user.admin+email+openid+phone+profile&"
-            + "redirect_uri=http://test-app-host.test.com/auth/callback"
+            + "redirect_uri=http://test-app-host.test.com/auth/callback&"
+            + "state=123_redirect=https://www.example.com"
+
         )
 
     def test_public_key_url(self, auth):

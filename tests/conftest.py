@@ -14,6 +14,7 @@ def config():
         callback_url="http://test-app-host.test.com/auth/callback",
         cognito_domain="https://test-cognito-domain.test.com",
         cognito_endpoint="https://test-cognito-endpoint.test.com",
+        cognito_state="123_redirect=https://www.example.com"
     )
 
 

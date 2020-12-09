@@ -18,7 +18,9 @@ class AuthConfig:
     callback_url: str
     cognito_domain: str
     cognito_endpoint: str
+    cognito_state: str
     cognito_scopes: List[str] = field(default_factory=lambda: DEFAULT_SCOPES)
+    
 
     @classmethod
     def from_env(cls) -> "AuthConfig":
@@ -28,4 +30,5 @@ class AuthConfig:
             callback_url=os.environ["CALLBACK_URL"],
             cognito_domain=os.environ["COGNITO_DOMAIN"],
             cognito_endpoint=os.environ["COGNITO_ENDPOINT"],
+            cognito_state=os.environ["COGNITO_STATE"]
         )
