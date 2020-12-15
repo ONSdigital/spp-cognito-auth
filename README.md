@@ -122,6 +122,7 @@ secure unique reference to the user session on the client side.
 
 ```python
 import redis
+import os
 
 from flask import Flask, session
 from flask_session import Session
@@ -130,6 +131,7 @@ from spp_cognito_auth import Auth, AuthConfig
 
 application = Flask(__name__)
 
+store = redis.StrictRedis(host=os.getenv("REDIS_ADDRESS"))
 application.config["SESSION_TYPE"] = "redis"
 application.config["SESSION_REDIS"] = store
 Session(application)
