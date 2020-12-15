@@ -108,6 +108,37 @@ def home():
     return "Hello, World!"
 ```
 
+### Sessions over 4KB
+
+Most browsers implement a 4KB cookie limit, by default flask stores its session info
+in this cookie. During testing we found that users with many roles may cause
+issues as there access tokens will exceed this limit.
+
+The workaround for this is to use [Flask-Session](https://flask-session.readthedocs.io/en/latest/)
+to store the session information in a backend of your choice and just store a
+secure unique reference to the user session on the client side.
+
+**Note**: You must call `flask_session.Session` before initialising `Auth`.
+
+```python
+import redis
+
+from flask import Flask, session
+from flask_session import Session
+
+from spp_cognito_auth import Auth, AuthConfig
+
+application = Flask(__name__)
+
+application.config["SESSION_TYPE"] = "redis"
+application.config["SESSION_REDIS"] = store
+Session(application)
+
+auth_config = AuthConfig.from_env()
+oauth_client = new_oauth_client(auth_config)
+application.auth = Auth(auth_config, oauth_client, session)
+```
+
 ### Configuration
 
 Configuration can be set in two ways.
