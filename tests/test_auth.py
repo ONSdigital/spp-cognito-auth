@@ -120,6 +120,32 @@ class TestAuth:
         assert auth._session["username"] == "mock-user"
         assert auth._session["roles"] == ["survey.main.read", "survey.main.write"]
 
+    @mock.patch.object(spp_cognito_auth.Auth, "get_auth_token")
+    @mock.patch.object(spp_cognito_auth.Auth, "get_public_keys")
+    @mock.patch("authlib.jose.jwt.decode")
+    def test_process_callback_no_groups(
+        self, mock_jwt_decode, mock_get_public_keys, mock_get_auth_token, auth, jwks
+    ):
+        mock_get_auth_token.return_value = {
+            "access_token": "mock-access-token",
+            "refresh_token": "mock-refresh-token",
+            "expires_at": "mock-expires-at",
+        }
+        mock_jwt_decode.return_value = {
+            "username": "mock-user",
+        }
+        mock_get_public_keys.return_value = jwks
+        auth._session = {}
+        auth.process_callback("fake-auth-code")
+        mock_get_auth_token.assert_called_once_with("fake-auth-code")
+        mock_jwt_decode.assert_called_once_with("mock-access-token", jwks)
+        mock_get_public_keys.assert_called_once()
+        assert auth._session["access_token"] == "mock-access-token"
+        assert auth._session["refresh_token"] == "mock-refresh-token"
+        assert auth._session["expires_at"] == "mock-expires-at"
+        assert auth._session["username"] == "mock-user"
+        assert auth._session["roles"] == []
+
     def test_get_username(self, auth):
         auth._session = {"username": "test-user"}
         assert auth.get_username() == "test-user"
