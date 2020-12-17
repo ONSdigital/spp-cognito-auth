@@ -109,6 +109,12 @@ class Auth:
                 return True
         return False
 
+    def has_permission(self, role_matchers: List[str]) -> bool:
+        for role_matcher in role_matchers:
+            if self.match_role(role_matcher):
+                return True
+        return False
+
     def set_redirect(self, url: str) -> None:
         self._session["redirect_url"] = url
 

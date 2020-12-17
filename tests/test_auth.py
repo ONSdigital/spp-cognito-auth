@@ -231,6 +231,21 @@ class TestAuth:
         auth._session["roles"] = roles
         assert auth.match_role(role_matcher) is expected
 
+    @pytest.mark.parametrize(
+        "role_matchers,roles,expected",
+        [
+            (["survey.main.write", "survey.main.read"], ["survey.main.read"], True),
+            (
+                ["survey.main.write", "survey.*.write", "dev"],
+                ["survey.main.read"],
+                False,
+            ),
+        ],
+    )
+    def test_has_permission(self, role_matchers, roles, expected, auth):
+        auth._session["roles"] = roles
+        assert auth.has_permission(role_matchers) is expected
+
     def test_generate_state(self, auth):
         state = auth.generate_state()
         assert is_valid_uuid(state)
